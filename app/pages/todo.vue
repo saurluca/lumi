@@ -110,16 +110,9 @@ onUnmounted(() => {
 });
 </script>
 
-<script>
-// Define the layout for this page
-export default {
-  layout: 'd-basic-page'
-}
-</script>
 
 <template>
   <div>
-    <d-nav />
     <h1 class="text-3xl font-bold mb-6">Todo List</h1>
     
     <!-- User not logged in message -->
