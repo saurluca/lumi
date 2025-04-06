@@ -22,7 +22,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "ITS",
+      title: "Lumi",
     },
   },
 
