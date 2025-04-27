@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# General Rules
+
+- First script, then template tags. Not style tags.
+- Use functional javascript
+- Keep things modular by creating new components when it makes sense. Follow the Dont Repeat Yourself (DRY) principle.
+
+# UI
+
+- Use nuxt-ui components when ever possible
+- TailwindCSS for styling
+- Keep a mobile first design philosophy
+
+
+
+
