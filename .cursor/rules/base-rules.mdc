@@ -8,7 +8,9 @@ alwaysApply: true
 
 - First script, then template tags. Not style tags.
 - Use functional javascript
-- Keep things modular by creating new components when it makes sense. Follow the Dont Repeat Yourself (DRY) principle.
+- Follow the Dont Repeat Yourself (DRY) principle.
+- Keep things modular by creating new components or composoables when it makes sense. 
+
 
 # UI
 
