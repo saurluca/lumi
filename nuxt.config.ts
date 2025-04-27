@@ -4,10 +4,13 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-01-23",
   future: { compatibilityVersion: 4 },
-  modules: ["@nuxtjs/supabase"],
+  modules: ["@nuxtjs/supabase", "@nuxt/ui"],
   devtools: { enabled: false },
   ssr: false,
-  css: ["@/app.css"],
+  css: ["./app/assets/css/main.css"],
+  ui: {
+    prefix: 'U'
+  },
 
   supabase: {
     redirect: true,
