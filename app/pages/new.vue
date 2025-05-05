@@ -10,7 +10,6 @@ const router = useRouter();
 const newTask = ref('');
 const tasks = ref([]);
 const loading = ref(true);
-const errorMessage = ref('');
 const addingTask = ref(false);
 
 // Rocket progress state
@@ -35,40 +34,84 @@ const fetchTasks = async () => {
     if (error) throw error;
     tasks.value = data;
   } catch (error) {
-    errorMessage.value = error.message;
     console.error('Error fetching tasks:', error);
   } finally {
     loading.value = false;
   }
 };
 
-// Add a new task
+// Generate a temporary ID
+const generateTempId = () => {
+  return 'temp_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+};
+
+// Add a new task (optimistic update)
 const addTask = async () => {
   if (!newTask.value.trim() || !user.value) return;
   
+  // Create a temporary task and add it immediately
+  const tempTask = {
+    id: generateTempId(),
+    name: newTask.value.trim(),
+    user_id: user.value.id,
+    is_complete: false,
+    created_at: new Date().toISOString()
+  };
+  
+  // Optimistically add to the UI
+  tasks.value = [tempTask, ...tasks.value];
+  
+  // Clear input field immediately
+  const taskContent = newTask.value.trim();
+  newTask.value = '';
+  
   try {
     addingTask.value = true;
-    const { error } = await supabase
+    
+    // Send to server
+    const { data, error } = await supabase
       .from('task_test')
       .insert([{ 
-        name: newTask.value.trim(),
+        name: taskContent,
         user_id: user.value.id
-      }]);
+      }])
+      .select();
     
     if (error) throw error;
     
-    newTask.value = '';
-    await fetchTasks();
+    // Replace temp task with real one from server
+    if (data && data[0]) {
+      const index = tasks.value.findIndex(t => t.id === tempTask.id);
+      if (index !== -1) {
+        tasks.value[index] = data[0];
+      }
+    }
   } catch (error) {
-    errorMessage.value = error.message;
+    // Remove temp task on error
+    tasks.value = tasks.value.filter(t => t.id !== tempTask.id);
     console.error('Error adding task:', error);
+    
+    // Restore input if there was an error
+    newTask.value = taskContent;
   } finally {
     addingTask.value = false;
   }
 };
 
-// Delete a task
+// Delete a task (optimistic update)
 const deleteTask = async (id) => {
+  // Save task for possible restoration
+  const taskIndex = tasks.value.findIndex(t => t.id === id);
+  const deletedTask = tasks.value[taskIndex];
+  
+  // Optimistically remove from UI
+  tasks.value = tasks.value.filter(task => task.id !== id);
+  
+  // Only send request to server for real tasks (not temporary ones)
+  if (typeof id === 'string' && id.startsWith('temp_')) {
+    return; // No need to delete temporary tasks from the server
+  }
+  
   try {
     const { error } = await supabase
       .from('task_test')
@@ -77,33 +120,45 @@ const deleteTask = async (id) => {
       .eq('user_id', user.value.id);
     
     if (error) throw error;
-    
-    // Update the local tasks array
-    tasks.value = tasks.value.filter(task => task.id !== id);
   } catch (error) {
-    errorMessage.value = error.message;
+    // Restore task on error
+    if (taskIndex !== -1) {
+      tasks.value.splice(taskIndex, 0, deletedTask);
+    }
     console.error('Error deleting task:', error);
   }
 };
 
-// Toggle task completion
+// Toggle task completion (optimistic update)
 const toggleTaskCompletion = async (task) => {
+  // Get and save the current state
+  const taskIndex = tasks.value.findIndex(t => t.id === task.id);
+  const previousState = task.is_complete;
+  const updatedState = !previousState;
+  
+  // Update UI immediately
+  if (taskIndex !== -1) {
+    tasks.value[taskIndex].is_complete = updatedState;
+  }
+  
+  // Only send request to server for real tasks (not temporary ones)
+  if (typeof task.id === 'string' && task.id.startsWith('temp_')) {
+    return; // No need to update temporary tasks on the server
+  }
+  
   try {
     const { data, error } = await supabase
       .from('task_test')
-      .update({ is_complete: !task.is_complete })
+      .update({ is_complete: updatedState })
       .eq('id', task.id)
       .select();
     
     if (error) throw error;
-    
-    // Update locally
-    const index = tasks.value.findIndex(t => t.id === task.id);
-    if (index !== -1) {
-      tasks.value[index].is_complete = !tasks.value[index].is_complete;
-    }
   } catch (error) {
-    errorMessage.value = error.message;
+    // Revert to previous state on error
+    if (taskIndex !== -1) {
+      tasks.value[taskIndex].is_complete = previousState;
+    }
     console.error('Error updating task:', error);
   }
 };
@@ -295,13 +350,16 @@ onMounted(() => {
           <UCard
             v-for="task in tasks"
             :key="task.id"
-            class="task-card p-0 border-l-4 transition-all"
-            :class="task.is_complete ? 'task-complete' : 'task-incomplete'"
+            class="task-card border-l-4 transition-all"
+            :class="[
+              task.is_complete ? 'task-complete' : 'task-incomplete',
+              (typeof task.id === 'string' && task.id.startsWith('temp_')) ? 'task-temp' : ''
+            ]"
           >
             <div class="flex items-center gap-3">
               <UCheckbox
                 :model-value="task.is_complete"
-                @update:model-value="toggleTaskCompletion(task)"
+                @update:model-value="() => toggleTaskCompletion(task)"
                 class="task-checkbox"
               />
               <span
@@ -332,16 +390,6 @@ onMounted(() => {
           class="empty-state"
         />
       </div>
-      
-      <!-- Error message toast -->
-      <UNotification
-        v-if="errorMessage"
-        :timeout="5000"
-        @close="errorMessage = ''"
-      >
-        <template #title>Error</template>
-        <template #description>{{ errorMessage }}</template>
-      </UNotification>
     </UContainer>
   </div>
 </template>
@@ -608,6 +656,23 @@ onMounted(() => {
 .task-complete {
   border-left-color: #10B981 !important;
   background: rgba(16, 185, 129, 0.1) !important;
+}
+
+.task-temp {
+  animation: pulse 2s infinite;
+  border-style: dashed;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .task-name {

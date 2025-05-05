@@ -1,6 +1,6 @@
 <template>
     <UApp>
-      <div class="text-white">
+      <div class="text-black">
         <NuxtPage />
       </div>
     </UApp>
