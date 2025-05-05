@@ -187,8 +187,11 @@ onMounted(() => {
     <!-- Stars -->
     <div class="stars-container">
       <div class="stars stars1"></div>
-      <div class="stars stars2"></div>
-      <div class="stars stars3"></div>
+      
+      <!-- Add shooting stars -->
+      <div class="shooting-star shooting-star-1"></div>
+      <div class="shooting-star shooting-star-2"></div>
+      <div class="shooting-star shooting-star-3"></div>
     </div>
     
     <!-- Moon -->
@@ -412,46 +415,128 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  z-index: 1;
 }
 
 .stars {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent),
-                    radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent),
-                    radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent),
-                    radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent),
-                    radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent),
-                    radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent),
-                    radial-gradient(2px 2px at calc(random(100) * 1%) calc(random(100) * 1%), white, transparent);
   background-size: 200px 200px;
+  opacity: 0;
 }
 
+/* Individual star layers with different sizes and speeds */
 .stars1 {
-  background-position: 50% 50%;
-  animation: stars-animation 100s linear infinite;
-  opacity: 0.5;
+  background-image: 
+    radial-gradient(1px 1px at 25% 5%, white, transparent),
+    radial-gradient(1px 1px at 50% 15%, white, transparent),
+    radial-gradient(1px 1px at 75% 25%, white, transparent),
+    radial-gradient(1px 1px at 20% 35%, white, transparent),
+    radial-gradient(1px 1px at 35% 45%, white, transparent),
+    radial-gradient(1px 1px at 65% 55%, white, transparent),
+    radial-gradient(1px 1px at 85% 75%, white, transparent),
+    radial-gradient(1px 1px at 10% 85%, white, transparent),
+    radial-gradient(1px 1px at 45% 95%, white, transparent);
+  animation: stars-animation 100s linear infinite, twinkle 8s ease-in-out infinite alternate;
+  opacity: 0.7;
 }
 
-.stars2 {
-  background-position: 20% 60%;
-  animation: stars-animation 150s linear infinite;
-  opacity: 0.4;
+/* Add some shining stars */
+.stars:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(4px 4px at 15% 20%, #FFFFFF, transparent),
+    radial-gradient(4px 4px at 35% 40%, #FFFFFF, transparent),
+    radial-gradient(4px 4px at 55% 60%, #FFFFFF, transparent),
+    radial-gradient(4px 4px at 75% 80%, #FFFFFF, transparent),
+    radial-gradient(5px 5px at 25% 70%, rgba(255, 230, 230, 0.9), transparent),
+    radial-gradient(5px 5px at 45% 30%, rgba(230, 255, 230, 0.9), transparent),
+    radial-gradient(5px 5px at 65% 10%, rgba(230, 230, 255, 0.9), transparent),
+    radial-gradient(5px 5px at 85% 50%, rgba(255, 230, 255, 0.9), transparent);
+  animation: shine 10s ease-in-out infinite alternate;
 }
 
-.stars3 {
-  background-position: 40% 80%;
-  animation: stars-animation 200s linear infinite;
-  opacity: 0.3;
+/* Shooting stars */
+.shooting-star {
+  position: absolute;
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  transform-origin: right center;
+  z-index: 2;
 }
 
+.shooting-star-1 {
+  top: 10%;
+  left: 30%;
+  transform: rotate(45deg);
+  animation: shooting-star 8s linear infinite 2s;
+}
+
+.shooting-star-2 {
+  top: 20%;
+  left: 60%;
+  transform: rotate(15deg);
+  animation: shooting-star 10s linear infinite 5s;
+}
+
+.shooting-star-3 {
+  top: 40%;
+  left: 10%;
+  transform: rotate(30deg);
+  animation: shooting-star 12s linear infinite 7s;
+}
+
+/* Animations */
 @keyframes stars-animation {
   0% {
     transform: translateY(0);
   }
   100% {
     transform: translateY(1000px);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shine {
+  0%, 100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shooting-star {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  15% {
+    transform: translateX(-300px) translateY(300px) rotate(45deg);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-300px) translateY(300px) rotate(45deg);
   }
 }
 
