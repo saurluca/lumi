@@ -27,6 +27,7 @@ const newTask = ref('');
 const tasks = ref([]);
 const loading = ref(true);
 const addingTask = ref(false);
+const isLaunching = ref(false);
 
 // Check if all tasks are complete
 const allTasksComplete = computed(() => {
@@ -38,10 +39,24 @@ const handleLaunch = () => {
   if (!allTasksComplete.value) return;
   console.log('All tasks complete, playing sound...');
   
+  // Set current progress as CSS variable for animation
+  const rocketElement = document.querySelector('.rocket-container');
+  if (rocketElement) {
+    rocketElement.style.setProperty('--rocket-progress', rocketProgress.value);
+  }
+  
+  // Set launching state
+  isLaunching.value = true;
+  
   // Play launch sound
   launchSound.currentTime = 0; // Reset sound to start
   launchSound.play()
     .catch(error => console.error('Error playing sound:', error));
+    
+  // Reset launch state after animation completes
+  setTimeout(() => {
+    isLaunching.value = false;
+  }, 2000);
 };
 
 // Rocket progress state
@@ -243,8 +258,8 @@ onMounted(() => {
     <!-- Content container -->
     <UContainer class="content-container max-w-3xl px-4 py-8">
       <!-- Header -->
-      <div class="mb-8 text-center">
-        <h1 class="text-3xl font-bold text-white text-shadow-lg mb-2">Lumi Rocket Adventures</h1>
+      <div class="mb-8 text-center" >
+        <h1 class="text-3xl font-bold text-white text-shadow-lg mb-2"  >Lumi Rocket Adventures</h1>
         <p class="text-blue-200 text-shadow-sm">Complete tasks to fuel your rocket!</p>
       </div>
 
@@ -252,6 +267,7 @@ onMounted(() => {
       <div class="mb-8 relative">
         <div class="flex justify-center mb-4">
           <UButton 
+            v-if="!isLaunching"
             class="progress-badge z-50"
             :class="{
               'progress-badge-complete': allTasksComplete,
@@ -278,7 +294,14 @@ onMounted(() => {
           </div>
           
           <!-- Rocket SVG -->
-          <div class="rocket-container" :style="`transform: translateY(${-rocketProgress * 0.7}%); transition: transform 0.8s ease-out;`">
+          <div 
+            class="rocket-container" 
+            :class="{ 'launching': isLaunching }"
+            :style="{
+              transform: `translateY(${-rocketProgress * 0.7}%)`,
+              animation: isLaunching ? 'launch 2s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'none'
+            }"
+          >
             <svg width="120" height="200" viewBox="0 0 120 200" class="rocket-svg">
               <!-- Flames -->
               <g v-if="rocketProgress > 0" class="flame">
@@ -741,6 +764,11 @@ onMounted(() => {
   bottom: 40px;
   z-index: 30;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  --current-y: 0%;
+}
+
+.rocket-container.launching {
+  --current-y: calc(-0.1% * var(--rocket-progress, 0));
 }
 
 /* Rocket SVG */
@@ -880,6 +908,33 @@ onMounted(() => {
     height: 8px;
     top: 15px;
     left: 35px;
+  }
+}
+
+/* Modify launching animation */
+@keyframes launch {
+  0% {
+    transform: translateY(var(--current-y));
+  }
+  20% {
+    transform: translateY(calc(var(--current-y) + 5%));
+  }
+  100% {
+    transform: translateY(-150%);
+  }
+}
+
+/* Enhance flame animation during launch */
+.launching .flame {
+  animation: launch-flame 0.1s infinite alternate;
+}
+
+@keyframes launch-flame {
+  0% {
+    transform: scaleX(1.2) scaleY(1.5);
+  }
+  100% {
+    transform: scaleX(1.4) scaleY(1.8);
   }
 }
 </style>
