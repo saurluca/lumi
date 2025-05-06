@@ -258,9 +258,12 @@ onMounted(() => {
     <!-- Content container -->
     <UContainer class="content-container max-w-3xl px-4 py-8">
       <!-- Header -->
-      <div class="mb-8 text-center" >
-        <h1 class="text-3xl font-bold text-white text-shadow-lg mb-2"  >Lumi Rocket Adventures</h1>
+      <div class="mb-8 text-center" v-if="!isLaunching">
+        <h1 class="text-3xl font-bold text-white text-shadow-lg mb-2">Lumi Rocket Adventures</h1>
         <p class="text-blue-200 text-shadow-sm">Complete tasks to fuel your rocket!</p>
+      </div>
+      <div class="mb-8 text-center" v-else>
+        <div class="h-[110px]"></div>
       </div>
 
       <!-- Rocket Progress Visualization -->
