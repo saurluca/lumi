@@ -6,21 +6,8 @@ const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const router = useRouter();
 
-// Create audio instances
+// Create audio instance
 const launchSound = new Audio('/assets/wuuui.mp3');
-const completionSounds = [
-  new Audio('/assets/GoodJob.mp3'),
-  new Audio('/assets/Nice.mp3'),
-  new Audio('/assets/Yes.mp3')
-];
-
-// Function to play random completion sound
-const playRandomCompletionSound = () => {
-  const randomSound = completionSounds[Math.floor(Math.random() * completionSounds.length)];
-  randomSound.currentTime = 0;
-  randomSound.play()
-    .catch(error => console.error('Error playing completion sound:', error));
-};
 
 // Task management
 const newTask = ref('');
@@ -171,11 +158,6 @@ const toggleTaskCompletion = async (task) => {
   // Update UI immediately
   if (taskIndex !== -1) {
     tasks.value[taskIndex].is_complete = updatedState;
-    
-    // Play sound only when completing a task (not when unchecking)
-    if (updatedState) {
-      playRandomCompletionSound();
-    }
   }
   
   // Only send request to server for real tasks (not temporary ones)
