@@ -199,6 +199,8 @@ onMounted(() => {
       <div class="crater crater1"></div>
       <div class="crater crater2"></div>
       <div class="crater crater3"></div>
+      <div class="crater crater4"></div>
+      <div class="crater crater5"></div>
     </div>
     
     <!-- Content container -->
@@ -545,11 +547,12 @@ onMounted(() => {
   position: absolute;
   top: 50px;
   right: 50px;
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #FBBF24, #E5E7EB);
-  box-shadow: 0 0 20px rgba(252, 211, 77, 0.4);
+  box-shadow: 0 0 30px rgba(252, 211, 77, 0.6);
+  z-index: 3;
 }
 
 .crater {
@@ -559,24 +562,41 @@ onMounted(() => {
 }
 
 .crater1 {
-  width: 20px;
-  height: 20px;
-  top: 15px;
-  left: 25px;
+  width: 30px;
+  height: 30px;
+  top: 25px;
+  left: 35px;
 }
 
 .crater2 {
-  width: 15px;
-  height: 15px;
-  top: 45px;
-  left: 15px;
+  width: 22px;
+  height: 22px;
+  top: 65px;
+  left: 22px;
 }
 
 .crater3 {
+  width: 18px;
+  height: 18px;
+  top: 30px;
+  left: 75px;
+}
+
+/* Add a couple more craters for a more detailed moon */
+.crater4 {
+  width: 15px;
+  height: 15px;
+  top: 75px;
+  left: 75px;
+  background: rgba(209, 213, 219, 0.7);
+}
+
+.crater5 {
   width: 10px;
   height: 10px;
-  top: 20px;
-  left: 50px;
+  top: 50px;
+  left: 60px;
+  background: rgba(209, 213, 219, 0.9);
 }
 
 /* Content container */
