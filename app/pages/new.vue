@@ -35,7 +35,7 @@ const allTasksComplete = computed(() => {
 });
 
 // Launch function
-const handleLaunch = () => {
+const handleLaunch = async () => {
   if (!allTasksComplete.value) return;
   console.log('All tasks complete, playing sound...');
   
@@ -54,7 +54,18 @@ const handleLaunch = () => {
     .catch(error => console.error('Error playing sound:', error));
     
   // Reset launch state after animation completes
-  setTimeout(() => {
+  setTimeout(async () => {
+    // Uncheck all tasks
+    for (const task of tasks.value) {
+      await supabase
+        .from('task_test')
+        .update({ is_complete: false })
+        .eq('id', task.id);
+      
+      // Update local state
+      task.is_complete = false;
+    }
+    
     isLaunching.value = false;
   }, 2000); // Match the animation duration
 };
