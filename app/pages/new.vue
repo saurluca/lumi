@@ -56,7 +56,7 @@ const handleLaunch = () => {
   // Reset launch state after animation completes
   setTimeout(() => {
     isLaunching.value = false;
-  }, 2000);
+  }, 2000); // Match the animation duration
 };
 
 // Rocket progress state
@@ -302,7 +302,7 @@ onMounted(() => {
             :class="{ 'launching': isLaunching }"
             :style="{
               transform: `translateY(${-rocketProgress * 0.7}%)`,
-              animation: isLaunching ? 'launch 2s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'none'
+              animation: isLaunching ? 'launch 2.1s cubic-bezier(0.45, 0, 0.55, 1) forwards' : 'none'
             }"
           >
             <svg width="120" height="200" viewBox="0 0 120 200" class="rocket-svg">
@@ -768,6 +768,7 @@ onMounted(() => {
   z-index: 30;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
   --current-y: 0%;
+  will-change: transform, opacity;
 }
 
 .rocket-container.launching {
@@ -918,26 +919,35 @@ onMounted(() => {
 @keyframes launch {
   0% {
     transform: translateY(var(--current-y));
+    opacity: 1;
   }
-  20% {
+  15% {
     transform: translateY(calc(var(--current-y) + 5%));
+    opacity: 1;
+  }
+  85% {
+    transform: translateY(-100vh);
+    opacity: 1;
   }
   100% {
-    transform: translateY(-150%);
+    transform: translateY(-100vh);
+    opacity: 0;
   }
 }
 
 /* Enhance flame animation during launch */
 .launching .flame {
   animation: launch-flame 0.1s infinite alternate;
+  transform-origin: center bottom;
+  transform: scale(2);
 }
 
 @keyframes launch-flame {
   0% {
-    transform: scaleX(1.2) scaleY(1.5);
+    transform: scaleX(1) scaleY(2);
   }
   100% {
-    transform: scaleX(1.4) scaleY(1.8);
+    transform: scaleX(2.5) scaleY(2.8);
   }
 }
 </style>
