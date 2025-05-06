@@ -420,12 +420,12 @@ onMounted(() => {
                 {{ task.name }}
               </span>
               <UButton
-                color="gray"
+                color="red"
                 variant="ghost"
                 icon="i-heroicons-trash"
-                size="xs"
+                size="md"
                 @click="deleteTask(task.id)"
-                class="delete-task-btn"
+                class="text-red-500 p-1 hover:bg-red-900 hover:text-black-600 transition-colors duration-200"
               />
             </div>
           </UCard>
@@ -845,14 +845,6 @@ onMounted(() => {
   transform: scale(1.1);
 }
 
-.delete-task-btn {
-  opacity: 0.6;
-  transition: all 0.3s ease;
-}
-
-.delete-task-btn:hover {
-  opacity: 1;
-}
 
 /* Empty state */
 .empty-state {
