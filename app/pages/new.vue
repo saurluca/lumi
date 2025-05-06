@@ -252,7 +252,7 @@ onMounted(() => {
       <div class="mb-8 relative">
         <div class="flex justify-center mb-4">
           <UButton 
-            class="progress-badge"
+            class="progress-badge z-50"
             :class="{
               'progress-badge-complete': allTasksComplete,
               'cursor-pointer hover:scale-105 transform transition-transform': allTasksComplete,
