@@ -944,10 +944,10 @@ onMounted(() => {
 
 @keyframes launch-flame {
   0% {
-    transform: scaleX(1) scaleY(2);
+    transform: scaleX(1) scaleY(1);
   }
   100% {
-    transform: scaleX(2.5) scaleY(2.8);
+    transform: scaleX(1.5) scaleY(1.8);
   }
 }
 </style>
