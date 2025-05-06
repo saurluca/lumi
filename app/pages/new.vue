@@ -377,9 +377,10 @@ onMounted(() => {
             type="submit"
             :loading="addingTask"
             :disabled="!newTask.trim()"
-            color="yellow"
+            color="green"
+            variant="solid"
             icon="i-heroicons-rocket-launch"
-            class="add-task-btn"
+            class="font-bold shadow-lg transition-all duration-300 ease-in-out bg-green-400"
           >
             Add
           </UButton>
